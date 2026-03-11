@@ -7,4 +7,4 @@
 
 import Foundation
 
-public protocol Component: AnyObject {}
+public protocol Component {}

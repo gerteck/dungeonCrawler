@@ -10,35 +10,54 @@ import Foundation
 public final class ComponentStorage {
 
     // MARK: - Internal layout
-    /// [type key → [entity → component instance]]
-    private var _storage: [ObjectIdentifier: [Entity: AnyObject]] = [:]
+    private var _stores: [ObjectIdentifier: any AnyComponentStore] = [:]
+    
+    // MARK: - Private store access
+
+    /// Returns the existing ComponentStore<T> for type T, or creates a new empty one.
+    private func store<T: Component>(for type: T.Type) -> ComponentStore<T> {
+        let key = ObjectIdentifier(T.self)
+        return (_stores[key] as? ComponentStore<T>) ?? ComponentStore<T>()
+    }
+
+    /// Writes a (possibly mutated) ComponentStore<T> back into the registry.
+    private func setStore<T: Component>(_ store: ComponentStore<T>, for type: T.Type) {
+        _stores[ObjectIdentifier(T.self)] = store
+    }
+
 
     // MARK: - Public API
 
     public func add<T: Component>(component: T, to entity: Entity) {
-        let key = ObjectIdentifier(T.self)
-        _storage[key, default: [:]][entity] = component
+        var s = store(for: T.self)
+        s.add(component, for: entity)
+        setStore(s, for: T.self)
     }
 
     public func get<T: Component>(type: T.Type, for entity: Entity) -> T? {
-        let key = ObjectIdentifier(T.self)
-        return _storage[key]?[entity] as? T
+        store(for: type).get(for: entity)
+    }
+    
+    public func modify<T: Component>(type: T.Type, for entity: Entity, body: (inout T) -> Void) {
+        var s = store(for: type)
+        s.modify(for: entity, body)
+        setStore(s, for: type)
     }
 
     public func remove<T: Component>(type: T.Type, from entity: Entity) {
-        let key = ObjectIdentifier(T.self)
-        _storage[key]?[entity] = nil
+        var s = store(for: type)
+        s.removeValue(for: entity)
+        setStore(s, for: type)
     }
 
     public func removeAll(from entity: Entity) {
-        for key in _storage.keys {
-            _storage[key]?[entity] = nil
+        for key in _stores.keys {
+            _stores[key]!.removeValue(for: entity)
         }
     }
 
     public func entities<T: Component>(with type: T.Type) -> [Entity] {
-        let key = ObjectIdentifier(T.self)
-        return Array(_storage[key]?.keys ?? [:].keys)
+        store(for: type).entities
     }
 
     // MARK: - Subscript sugar
