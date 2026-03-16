@@ -28,16 +28,6 @@ final class MoveSpeedComponentTests: XCTestCase {
         XCTAssertEqual(speed.value.current, 90, accuracy: Float(0.001))
     }
 
-    func testMoveSpeedMinIsZero() {
-        let speed = MoveSpeedComponent(base: 90)
-        XCTAssertEqual(speed.value.min, 0, accuracy: Float(0.001))
-    }
-
-    func testMoveSpeedMaxIsNil() {
-        let speed = MoveSpeedComponent(base: 90)
-        XCTAssertNil(speed.value.max)
-    }
-
     func testMoveSpeedIsComponent() {
         let entity = world.createEntity()
         world.addComponent(component: MoveSpeedComponent(base: 90), to: entity)

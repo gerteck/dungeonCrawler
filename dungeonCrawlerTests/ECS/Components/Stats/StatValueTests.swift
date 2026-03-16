@@ -16,60 +16,49 @@ final class StatValueTests: XCTestCase {
         XCTAssertEqual(stat.current, 50, accuracy: 0.001)
     }
 
-    func testInitDefaultMinIsZero() {
-        let stat = StatValue(base: 10)
-        XCTAssertEqual(stat.min, 0, accuracy: 0.001)
-    }
-
     func testInitDefaultMaxIsNil() {
         let stat = StatValue(base: 10)
         XCTAssertNil(stat.max)
     }
 
-    func testInitCustomMinAndMax() {
-        let stat = StatValue(base: 50, min: 10, max: 100)
-        XCTAssertEqual(stat.min, 10, accuracy: Float(0.001))
+    func testInitCustomMax() {
+        let stat = StatValue(base: 50, max: 100)
         XCTAssertEqual(stat.max, Float(100))
     }
 
     func testClampAboveMax() {
-        var stat = StatValue(base: 50, min: 0, max: 100)
+        var stat = StatValue(base: 50, max: 100)
         stat.current = 150
-        stat.clampToBounds()
+        stat.clampToMax()
         XCTAssertEqual(stat.current, 100, accuracy: 0.001)
     }
 
-    func testClampBelowMin() {
-        var stat = StatValue(base: 50, min: 10, max: 100)
-        stat.current = 5
-        stat.clampToBounds()
-        XCTAssertEqual(stat.current, 10, accuracy: 0.001)
-    }
-
     func testClampWithinBoundsUnchanged() {
-        var stat = StatValue(base: 50, min: 0, max: 100)
+        var stat = StatValue(base: 50, max: 100)
         stat.current = 75
-        stat.clampToBounds()
+        stat.clampToMax()
         XCTAssertEqual(stat.current, 75, accuracy: 0.001)
     }
 
     func testClampNilMaxAllowsAnyValue() {
-        var stat = StatValue(base: 50, min: 0, max: nil)
+        var stat = StatValue(base: 50, max: nil)
         stat.current = 999_999
-        stat.clampToBounds()
+        stat.clampToMax()
         XCTAssertEqual(stat.current, 999_999, accuracy: 0.001)
     }
 
-    func testClampExactBoundaryUnchanged() {
-        var statMin = StatValue(base: 50, min: 0, max: 100)
-        statMin.current = 0
-        statMin.clampToBounds()
-        XCTAssertEqual(statMin.current, 0, accuracy: 0.001)
+    func testClampExactMaxBoundaryUnchanged() {
+        var stat = StatValue(base: 50, max: 100)
+        stat.current = 100
+        stat.clampToMax()
+        XCTAssertEqual(stat.current, 100, accuracy: 0.001)
+    }
 
-        var statMax = StatValue(base: 50, min: 0, max: 100)
-        statMax.current = 100
-        statMax.clampToBounds()
-        XCTAssertEqual(statMax.current, 100, accuracy: 0.001)
+    func testCurrentCanGoBelowZero() {
+        var stat = StatValue(base: 50, max: 100)
+        stat.current = -25
+        stat.clampToMax()
+        XCTAssertEqual(stat.current, -25, accuracy: 0.001)
     }
 
     func testValueSemantics() {

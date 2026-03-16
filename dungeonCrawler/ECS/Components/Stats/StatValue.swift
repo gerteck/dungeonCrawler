@@ -10,18 +10,15 @@ import Foundation
 public struct StatValue {
     public var base: Float
     public var current: Float
-    public var min: Float
     public var max: Float?
 
-    public init(base: Float, min: Float = 0, max: Float? = nil) {
+    public init(base: Float, max: Float? = nil) {
         self.base = base
         self.current = base
-        self.min = min
         self.max = max
     }
 
-    public mutating func clampToBounds() {
-        current = Swift.max(min, current)
+    public mutating func clampToMax() {
         if let max {
             current = Swift.min(max, current)
         }

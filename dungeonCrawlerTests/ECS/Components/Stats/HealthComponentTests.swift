@@ -33,11 +33,6 @@ final class HealthComponentTests: XCTestCase {
         XCTAssertEqual(health.value.current, 80, accuracy: Float(0.001))
     }
 
-    func testHealthMinIsZero() {
-        let health = HealthComponent(base: 100)
-        XCTAssertEqual(health.value.min, 0, accuracy: Float(0.001))
-    }
-
     func testHealthCustomMax() {
         let health = HealthComponent(base: 50, max: 200)
         XCTAssertEqual(health.value.max, Float(200))

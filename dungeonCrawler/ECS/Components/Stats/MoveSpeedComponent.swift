@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct MoveSpeedComponent: Component {
+public struct MoveSpeedComponent: StatProvidable {
     public var value: StatValue
 
     public init(base: Float) {
-        self.value = StatValue(base: base, min: 0, max: nil)
+        self.value = StatValue(base: base)
     }
 }

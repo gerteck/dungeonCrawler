@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct HealthComponent: Component {
+public struct HealthComponent: StatProvidable {
     public var value: StatValue
 
     public init(base: Float, max: Float? = nil) {
-        self.value = StatValue(base: base, min: 0, max: max ?? base)
+        self.value = StatValue(base: base, max: max ?? base)
     }
 }
