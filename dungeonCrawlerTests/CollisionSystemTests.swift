@@ -45,6 +45,7 @@ final class CollisionSystemTests: XCTestCase {
         ))
     }
 
+
     func testNoCollisionWhenClearlyApart() {
         let box = SIMD2<Float>(10, 10)
         let transformA = TransformComponent(position: SIMD2<Float>(0, 0), scale: 1)
@@ -54,6 +55,48 @@ final class CollisionSystemTests: XCTestCase {
         XCTAssertFalse(collisionSystem.checkCollision(
             transformA: transformA, boxA: boxComp,
             transformB: transformB, boxB: boxComp
+        ))
+    }
+    
+    // collision detected when entities overlap
+
+    func testCollisionWhenOverlapping() {
+        let box = SIMD2<Float>(10, 10)
+        let transformA = TransformComponent(position: SIMD2<Float>(0, 0), scale: 1)
+        let transformB = TransformComponent(position: SIMD2<Float>(5, 0), scale: 1) // 5 apart, boxes overlap by 5
+        let boxComp = CollisionBoxComponent(size: box)
+
+        XCTAssertTrue(collisionSystem.checkCollision(
+            transformA: transformA, boxA: boxComp,
+            transformB: transformB, boxB: boxComp
+        ))
+    }
+    
+    func testCollisionWithDifferentBoxSize() {
+        // A at (0,0) size (10,10): right edge at x=5
+        // B at (10,0) size (20,20): left edge at x=0, overlap of 5
+        let transformA = TransformComponent(position: SIMD2<Float>(0, 0), scale: 1)
+        let transformB = TransformComponent(position: SIMD2<Float>(10, 0), scale: 1)
+        let boxCompA = CollisionBoxComponent(size: SIMD2<Float>(10, 10))
+        let boxCompB = CollisionBoxComponent(size: SIMD2<Float>(20, 20))
+
+        XCTAssertTrue(collisionSystem.checkCollision(
+            transformA: transformA, boxA: boxCompA,
+            transformB: transformB, boxB: boxCompB
+        ))
+    }
+
+    func testCollisionWithRotation() {
+        // A at (0,0) size (10,10): right edge at x=5
+        // B at (10,0) size (20,20) rotated 45 degrees: left edge extends to x=-5, overlap of 10
+        let transformA = TransformComponent(position: SIMD2<Float>(0, 0), rotation: 0, scale: 1)
+        let transformB = TransformComponent(position: SIMD2<Float>(10, 0), rotation: .pi / 4, scale: 1)
+        let boxCompA = CollisionBoxComponent(size: SIMD2<Float>(10, 10))
+        let boxCompB = CollisionBoxComponent(size: SIMD2<Float>(20, 20))
+
+        XCTAssertTrue(collisionSystem.checkCollision(
+            transformA: transformA, boxA: boxCompA,
+            transformB: transformB, boxB: boxCompB
         ))
     }
 }
