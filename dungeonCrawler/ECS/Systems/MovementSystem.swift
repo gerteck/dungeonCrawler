@@ -28,12 +28,11 @@ public final class MovementSystem: System {
 
         let movable = world.entities(
             with: InputComponent.self,
-            and: VelocityComponent.self
+            and: VelocityComponent.self,
+            and: MoveSpeedComponent.self
         )
 
-        for (entity, input, _) in movable {
-            guard let moveSpeed = world.getComponent(type: MoveSpeedComponent.self, for: entity)
-            else { continue }
+        for (entity, input, _, moveSpeed) in movable {
 
             world.modifyComponent(type: VelocityComponent.self, for: entity) { velocity in
                 velocity.linear = input.moveDirection * moveSpeed.value.current
