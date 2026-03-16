@@ -35,7 +35,7 @@ final class CollisionSystemTests: XCTestCase {
     func testNoCollisionWhenSeparated() {
         let box = SIMD2<Float>(10, 10)
         let transformA = TransformComponent(position: SIMD2<Float>(0, 0), scale: 1)
-        let transformB = TransformComponent(position: SIMD2<Float>(20, 0), scale: 1) // 20 apart, 5 each side = touching exactly
+        let transformB = TransformComponent(position: SIMD2<Float>(10, 0), scale: 1) // 10 apart, 5 each side = touching exactly
         let boxComp = CollisionBoxComponent(size: box)
 
         // Exactly touching (distance == sum of half-widths) is NOT a collision.
