@@ -24,11 +24,11 @@ See: [Components](./components/component.md)
 ### System
 A system contains the logic. Systems iterate over all entities, for those that have a specific set of components, they process them and update the components. Examples:
 
-- `MovementSystem` — reads `VelocityComponent`, writes `PositionComponent`
-- `RenderSystem` — reads `PositionComponent`, draws the entity on screen
+- `MovementSystem` — reads `VelocityComponent`, writes `TransformComponent`
+- `RenderSystem` — reads `TransformComponent`, draws the entity on screen
 - `CombatSystem` — reads `HealthComponent`, applies damage
 
-See: [Systems](./system.md)
+See: [Systems](./systems/system.md)
 
 ## Why ECS?
 

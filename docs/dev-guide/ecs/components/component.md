@@ -7,7 +7,7 @@ sidebar_position: 2
 
 # Components
 
-A component is a **plain data container**,  a Swift `struct` that holds state but no logic. Every component conforms to the `Component` marker protocol:
+A component is a **plain data container**: a Swift `struct` that holds state but no logic. Every component conforms to the `Component` marker protocol:
 
 ```swift
 public protocol Component {}
