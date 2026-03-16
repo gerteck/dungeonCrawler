@@ -12,8 +12,24 @@ public final class CollisionSystem: System {
     public let priority: Int = 10
 
     public func update(deltaTime: Double, world: World) {
-        // OBB collision detection and resolution using SAT (Separating Axis Theorem).
-
+        let dt = Float(deltaTime)
+        // Need entites with BOTH Transform and CollisionBox components
+        let collidables = world.entities(
+            with: TransformComponent.self,
+            and: CollisionBoxComponent.self
+        )
+        for i in 0..<collidables.count {
+            let (entityA, transformA, boxA) = collidables[i]
+            for j in (i + 1)..<collidables.count {
+                let (entityB, transformB, boxB) = collidables[j]
+                if let mtv = minimumTranslationVector(
+                    transformA: transformA, boxA: boxA,
+                    transformB: transformB, boxB: boxB
+                ) {
+                    resolveCollision(entityA: entityA, entityB: entityB, mtv: mtv, world: world)
+                }
+            }
+        }
     }
 
     /// Returns true if the two OBBs overlap.
@@ -74,4 +90,7 @@ public final class CollisionSystem: System {
         let c = dot(center, axis)
         return (c - r, c + r)
     }
+
+
+    
 }
