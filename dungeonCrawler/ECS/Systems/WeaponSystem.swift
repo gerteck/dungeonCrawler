@@ -10,10 +10,10 @@ class WeaponSystem: System {
         self.gameTime = 0
     }
 
-    func update(deltaTime: TimeInterval, world: World) {
-        self.gameTime += deltaTime
+    func update(deltaTime: Foundation.TimeInterval, world: World) {
+        self.gameTime += Float(deltaTime)
 
-        for (weaponEntity, weaponComponent, ownerComponent) in world.entities(with: WeaponComponent.self, and: OwnerComponent.self) {
+        for (weaponEntity, _, ownerComponent) in world.entities(with: WeaponComponent.self, and: OwnerComponent.self) {
             let ownerEntity = ownerComponent.ownerEntity
             if let ownerTransformComponent = world.getComponent(type: TransformComponent.self, for: ownerEntity) {
                 world.modifyComponent(type: TransformComponent.self, for: weaponEntity) { transform in

@@ -75,6 +75,7 @@ class GameScene: SKScene {
         systemManager.register(HealthSystem())
         systemManager.register(MovementSystem())
         systemManager.register(CollisionSystem())
+        systemManager.register(WeaponSystem())
         systemManager.register(RenderSystem(scene: self))
     }
 
@@ -84,9 +85,11 @@ class GameScene: SKScene {
         let shortSide   = Float(min(size.width, size.height))
         let knightScale = shortSide * 0.04 / 48.0   // assumes 48pt base texture size
         let enemyScale = shortSide * 0.04 / 48.0   // follow knight scale for now
-        EntityFactory.makePlayer(in: world, at: .zero, scale: knightScale)
+        let weaponScale = shortSide * 0.1 / 48.0   // follow knight scale for now
+        let playerEntity = EntityFactory.makePlayer(in: world, at: .zero, scale: knightScale)
         EntityFactory.makeEnemy(in: world, at: SIMD2(100, 100), type:
                 .charger, scale: enemyScale * EnemyType.charger.scale)
+        EntityFactory.makeWeapon(in: world, ownedBy: playerEntity, textureName: "handgun", offset: SIMD2(10, 10), scale: weaponScale)
     }
 
     // MARK: - Touch forwarding
