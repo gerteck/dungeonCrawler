@@ -54,8 +54,8 @@ public enum EntityFactory {
         let startPos = world.getComponent(component: TransformComponent.self, for: player)?.position ?? .zero
         world.addComponent(component: TransformComponent(position: startPos + offset, rotation: 0, scale: scale), to: entity)
         world.addComponent(component: OwnerComponent(ownerEntity: player, offset: offset), to: entity)
-        world.addComponent(com)
-        
+        world.addComponent(component: WeaponComponent(type: .handgun, baseDamage: 10, effectiveRange: 10, manaCost: 10, attackSpeed: 1, 
+                                                      coolDownInterval: TimeInterval(startTime: 0, duration: 1)), to: entity)
         return entity
     }
 }
