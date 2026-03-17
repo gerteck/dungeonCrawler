@@ -13,34 +13,37 @@ public final class World {
     // MARK: - Subsystems (internal ownership)
 
     public let components = ComponentStorage()
-    private var _entities: Set<Entity> = []
+    private var _entities: Set<EntityID> = []
 
     // MARK: - Entity Lifecycle
 
     @discardableResult
     public func createEntity() -> Entity {
         let entity = Entity.init()
-        _entities.insert(entity)
+        _entities.insert(entity.id)
         return entity
     }
 
     public func destroyEntity(entity: Entity) {
         components.removeAll(from: entity)
-        _entities.remove(entity)
+        _entities.remove(entity.id)
     }
     
     public func destroyAllEntities() {
-        for entity in _entities {
+        for entityID in _entities {
+            let entity = Entity(id: entityID)
             components.removeAll(from: entity)
         }
         _entities.removeAll()
     }
 
     public func isAlive(entity: Entity) -> Bool {
-        _entities.contains(entity)
+        _entities.contains(entity.id)
     }
 
-    public var allEntities: Set<Entity> { _entities }
+    public var allEntities: Set<Entity> {
+        Set(_entities.map { Entity(id: $0) })
+    }
 
     // MARK: - Component convenience pass-throughs
 
@@ -74,6 +77,22 @@ public final class World {
                 let b = components.get(type: typeB, for: entity)
             else { return nil }
             return (entity, a, b)
+        }
+    }
+
+    /// Returns every living entity that has all three of `T`, `U`, and `V` (3-way join).
+    public func entities<T: Component, U: Component, V: Component>(
+        with typeA: T.Type,
+        and typeB: U.Type,
+        and typeC: V.Type
+    ) -> [(entity: Entity, a: T, b: U, c: V)] {
+        components.entities(with: typeA).compactMap { entity in
+            guard
+                let a = components.get(type: typeA, for: entity),
+                let b = components.get(type: typeB, for: entity),
+                let c = components.get(type: typeC, for: entity)
+            else { return nil }
+            return (entity, a, b, c)
         }
     }
 }
