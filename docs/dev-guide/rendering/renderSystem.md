@@ -8,7 +8,7 @@ sidebar_position: 3
 
 The `RenderSystem` is how the entities in the **ECS World** (Logic) are rendered.
 
-We use **SpriteKit** to render the entities, but the system itself has **no SpriteKit dependency** — it delegates all engine-specific work to a `RenderingBackend`. The SpriteKit implementation of that backend is `SpriteKitRenderingBackend`.
+We use **SpriteKit** to render the entities, but the system itself has **no SpriteKit dependency** — it delegates all engine-specific work to a `RenderingBackend`. The SpriteKit implementation of that backend is `SpriteKitRenderingAdapter`.
 
 
 **Components Required**:
@@ -36,7 +36,7 @@ protocol RenderingBackend: AnyObject {
 }
 ```
 
-* **SpriteKitRenderingBackend**: is the concrete SpriteKit implementation of `RenderingBackend`. It:
+* **SpriteKitRenderingAdapter**: is the concrete SpriteKit implementation of `RenderingBackend`. It:
     - Keeps a private `nodeRegistry: [Entity: SKSpriteNode]` mapping each entity to its visual node.
     - Adds new nodes to **`worldLayer`** (not the scene root), so the `SpriteKitCameraAdapter` can shift the entire world layer to implement camera movement.
     - Handles flip direction based on `VelocityComponent`, tint color, and `zPosition`.
