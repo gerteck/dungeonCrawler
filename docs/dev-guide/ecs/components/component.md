@@ -76,3 +76,14 @@ for (entity, transform, sprite) in renderables {
     // ...
 }
 ```
+
+## Weapons
+
+Weapons are entities that can be equipped by the player. They have the following components:
+
+## Projectiles
+
+Projectiles are entities that are spawned by the weapon if the weapon is fired.
+
+Note that projectiles are NOT a special weapon but are entities that are spawned by the weapon if the weapon is fired.
+
