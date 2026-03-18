@@ -39,6 +39,7 @@ public enum EntityFactory {
         world.addComponent(component: InputComponent(), to: entity)
         world.addComponent(component: SpriteComponent(textureName: textureName), to: entity)
         world.addComponent(component: PlayerTagComponent(), to: entity)
+        world.addComponent(component: CameraFocusComponent(), to: entity)
         world.addComponent(component: HealthComponent(base: 100), to: entity)
         world.addComponent(component: MoveSpeedComponent(base: 90), to: entity)
 
