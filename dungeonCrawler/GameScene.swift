@@ -86,9 +86,11 @@ class GameScene: SKScene {
         
         systemManager.register(mapSystem)
         systemManager.register(InputSystem(inputProvider: touchInput))
+        systemManager.register(EnemyAISystem())
         systemManager.register(HealthSystem())
         systemManager.register(MovementSystem())
         systemManager.register(CollisionSystem())
+        systemManager.register(KnockbackSystem())
         systemManager.register(CameraSystem())
         systemManager.register(RenderSystem(backend: renderingBackend))
     }
@@ -107,6 +109,20 @@ class GameScene: SKScene {
         mapSystem.spawnPlayerInRoom(room: room, world: world, size: size)
         
         // Create camera entity and attach focus to the player.
+    }
+
+    private func spawnInitialEntities() {
+        let shortSide   = Float(min(size.width, size.height))
+        let knightScale = shortSide * 0.04 / 48.0
+        let enemyScale  = shortSide * 0.04 / 48.0
+
+        EntityFactory.makePlayer(in: world, at: .zero, scale: knightScale)
+        EntityFactory.makeEnemy(in: world, at: SIMD2(100, 100), type: .charger, baseScale: enemyScale)
+        EntityFactory.makeEnemy(in: world, at: SIMD2(200, 200), type: .tower, baseScale: enemyScale)
+
+        // Camera entity — ViewportComponent holds live camera state.
+        // CameraFocusComponent stays on the player
+
         let cameraEntity = world.createEntity()
         world.addComponent(component: ViewportComponent(), to: cameraEntity)
         if let player = world.entities(with: PlayerTagComponent.self).first {

@@ -34,5 +34,6 @@ jobs:
           -sdk iphonesimulator \
           -destination 'platform=iOS Simulator,name=iPhone 16' \
           -only-testing:dungeonCrawlerTests \
+          IPHONEOS_DEPLOYMENT_TARGET=18.5 \
           ONLY_ACTIVE_ARCH=YES
       
