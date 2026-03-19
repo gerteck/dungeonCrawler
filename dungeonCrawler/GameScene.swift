@@ -76,6 +76,7 @@ class GameScene: SKScene {
         systemManager.register(HealthSystem())
         systemManager.register(MovementSystem())
         systemManager.register(CollisionSystem())
+        systemManager.register(KnockbackSystem())
         systemManager.register(RenderSystem(scene: self))
     }
 

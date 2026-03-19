@@ -297,6 +297,56 @@ final class MovementSystemTests: XCTestCase {
         system.update(deltaTime: 0.1, world: world)
     }
 
+    // MARK: - Knockback suppression
+
+    // input velocity will not be applied in knockback
+    func testPlayerInKnockbackIsNotMovedByInput() {
+        let entity = world.createEntity()
+        world.addComponent(component: TransformComponent(position: SIMD2<Float>(0, 0)), to: entity)
+        world.addComponent(component: VelocityComponent(), to: entity)
+        world.addComponent(component: InputComponent(moveDirection: SIMD2<Float>(1, 0)), to: entity)
+        world.addComponent(component: MoveSpeedComponent(base: 100), to: entity)
+        world.addComponent(component: KnockbackComponent(velocity: SIMD2(-100, 0), remainingTime: 0.3), to: entity)
+
+        system.update(deltaTime: 0.1, world: world)
+
+        let transform = world.getComponent(type: TransformComponent.self, for: entity)
+        XCTAssertEqual(transform!.position.x, 0, accuracy: 0.01)
+        XCTAssertEqual(transform!.position.y, 0, accuracy: 0.01)
+    }
+
+    // only knockback will move enemy, movement will not move to prevent
+    // contradicting movements
+    func testEnemyInKnockbackIsNotMovedByMovementSystem() {
+        let entity = world.createEntity()
+        world.addComponent(component: TransformComponent(position: SIMD2<Float>(0, 0)), to: entity)
+        world.addComponent(component: VelocityComponent(linear: SIMD2(100, 0)), to: entity)
+        world.addComponent(component: EnemyStateComponent(), to: entity)
+        world.addComponent(component: KnockbackComponent(velocity: SIMD2(-100, 0), remainingTime: 0.3), to: entity)
+
+        system.update(deltaTime: 0.1, world: world)
+
+        let transform = world.getComponent(type: TransformComponent.self, for: entity)
+        XCTAssertEqual(transform!.position.x, 0, accuracy: 0.01)
+        XCTAssertEqual(transform!.position.y, 0, accuracy: 0.01)
+    }
+
+    // MARK: - Enemy movement
+
+    // knockback guard will not be trigerred without knockbackComponent
+    func testEnemyWithVelocityIsMovedByMovementSystem() {
+        let entity = world.createEntity()
+        world.addComponent(component: TransformComponent(position: SIMD2<Float>(0, 0)), to: entity)
+        world.addComponent(component: VelocityComponent(linear: SIMD2(100, 0)), to: entity)
+        world.addComponent(component: EnemyStateComponent(), to: entity)
+
+        system.update(deltaTime: 0.1, world: world)
+
+        let transform = world.getComponent(type: TransformComponent.self, for: entity)
+        XCTAssertEqual(transform!.position.x, 10, accuracy: 0.01)
+        XCTAssertEqual(transform!.position.y, 0, accuracy: 0.01)
+    }
+
     func testEntityWithoutMoveSpeedSkipped() {
         let entity = world.createEntity()
         world.addComponent(component: TransformComponent(position: SIMD2<Float>(5, 5)), to: entity)

@@ -22,6 +22,8 @@ public final class EnemyAISystem: System {
         let enemies = world.entities(with: EnemyStateComponent.self, and: TransformComponent.self)
 
         for (enemy, state, transform) in enemies {
+            guard world.getComponent(type: KnockbackComponent.self, for: enemy) == nil else { continue }
+
             let distToPlayer = simd_length(playerPos - transform.position)
 
             if distToPlayer <= state.detectionRadius {

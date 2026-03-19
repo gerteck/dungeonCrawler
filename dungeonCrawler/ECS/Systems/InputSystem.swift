@@ -39,6 +39,8 @@ public final class InputSystem: System {
         let shooting      = provider.isShootPressed
 
         for entity in world.entities(with: InputComponent.self) {
+            guard world.getComponent(type: KnockbackComponent.self, for: entity) == nil else { continue }
+
             world.modifyComponent(type: InputComponent.self, for: entity) { input in
                 input.moveDirection = moveDirection
                 input.aimDirection  = aimDirection

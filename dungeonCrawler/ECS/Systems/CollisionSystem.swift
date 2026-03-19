@@ -26,7 +26,8 @@ public final class CollisionSystem: System {
                     transformA: transformA, boxA: boxA,
                     transformB: transformB, boxB: boxB
                 ) {
-                    resolveCollision(entityA: entityA, entityB: entityB, mtv: mtv, world: world)
+                    resolveCollision(entityA: entityA, entityB: entityB, mtv: mtv,
+                                     transformA: transformA, transformB: transformB, world: world)
                 }
             }
         }
@@ -91,12 +92,56 @@ public final class CollisionSystem: System {
         return (c - r, c + r)
     }
 
+    // Currently, the player will bounce in the opposite direction more than enemy
+    private func resolveCollision(entityA: Entity, entityB: Entity, mtv: SIMD2<Float>,
+                                   transformA: TransformComponent, transformB: TransformComponent,
+                                   world: World) {
+        let bounceDir = normalize(transformA.position - transformB.position)
+        let knockbackSpeed: Float = 150
+        let knockbackDuration: Float = 0.1
+        let playerBounce: Float = 0.1
+        let enemyBounce: Float = 0.75
 
-    private func resolveCollision(entityA: Entity, entityB: Entity, mtv: SIMD2<Float>, world: World) {
-        // For now, just move A out of collision. 
-        // TODO: add mass/velocity and do proper physics response.
-        world.modifyComponent(type: TransformComponent.self, for: entityA) { transform in
-            transform.position += mtv
+
+        let aIsPlayer = world.getComponent(type: PlayerTagComponent.self, for: entityA) != nil
+        let bIsPlayer = world.getComponent(type: PlayerTagComponent.self, for: entityB) != nil
+        let aInKnockback = world.getComponent(type: KnockbackComponent.self, for: entityA) != nil
+        let bInKnockback = world.getComponent(type: KnockbackComponent.self, for: entityB) != nil
+
+        if aIsPlayer {
+            world.modifyComponent(type: TransformComponent.self, for: entityA) {
+                $0.position += mtv * playerBounce
+            }
+
+            world.modifyComponent(type: TransformComponent.self, for: entityB) {
+                $0.position -= mtv * enemyBounce
+            }
+
+            if !aInKnockback {
+                world.addComponent(component: KnockbackComponent(velocity: knockbackSpeed * bounceDir, remainingTime: knockbackDuration), to: entityA)
+            }
+            if !bInKnockback {
+                world.addComponent(component: KnockbackComponent(velocity: knockbackSpeed * -bounceDir, remainingTime: knockbackDuration), to: entityB)
+            }
+        } else if bIsPlayer {
+            world.modifyComponent(type: TransformComponent.self, for: entityB) { $0.position -= mtv * playerBounce }
+            world.modifyComponent(type: TransformComponent.self, for: entityA) { $0.position += mtv * enemyBounce }
+            if !bInKnockback {
+                world.addComponent(component: KnockbackComponent(velocity: knockbackSpeed * -bounceDir, remainingTime: knockbackDuration), to: entityB)
+            }
+            if !aInKnockback {
+                world.addComponent(component: KnockbackComponent(velocity: knockbackSpeed * bounceDir, remainingTime: knockbackDuration), to: entityA)
+            }
+        } else {
+            // enemy vs enemy — equal push
+            world.modifyComponent(type: TransformComponent.self, for: entityA) { $0.position += mtv * 0.5 }
+            world.modifyComponent(type: TransformComponent.self, for: entityB) { $0.position -= mtv * 0.5 }
+            if !aInKnockback {
+                world.addComponent(component: KnockbackComponent(velocity: knockbackSpeed * bounceDir, remainingTime: knockbackDuration), to: entityA)
+            }
+            if !bInKnockback {
+                world.addComponent(component: KnockbackComponent(velocity: knockbackSpeed * -bounceDir, remainingTime: knockbackDuration), to: entityB)
+            }
         }
     }
 }

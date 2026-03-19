@@ -33,6 +33,7 @@ public final class MovementSystem: System {
         )
 
         for (entity, input, _, moveSpeed) in movable {
+            guard world.getComponent(type: KnockbackComponent.self, for: entity) == nil else { continue }
 
             world.modifyComponent(type: VelocityComponent.self, for: entity) { velocity in
                 velocity.linear = input.moveDirection * moveSpeed.value.current
@@ -54,6 +55,8 @@ public final class MovementSystem: System {
         // Integrate velocity for enemies (velocity is set by EnemyAISystem)
         let enemyMovable = world.entities(with: EnemyStateComponent.self, and: VelocityComponent.self)
         for (entity, _, velocity) in enemyMovable {
+            guard world.getComponent(type: KnockbackComponent.self, for: entity) == nil else { continue }
+            
             world.modifyComponent(type: TransformComponent.self, for: entity) { transform in
                 transform.position += velocity.linear * dt
                 transform.position.x = max(worldBounds.minX, min(worldBounds.maxX, transform.position.x))

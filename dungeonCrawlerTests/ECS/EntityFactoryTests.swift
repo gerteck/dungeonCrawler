@@ -90,6 +90,22 @@ final class EntityFactoryTests: XCTestCase {
         XCTAssertEqual(speed!.value.current, 90, accuracy: 0.001)
     }
 
+    // MARK: - makePlayer: CollisionBoxComponent
+
+    func testMakePlayerHasCollisionBox() {
+        let entity = EntityFactory.makePlayer(in: world, at: .zero)
+        XCTAssertNotNil(world.getComponent(type: CollisionBoxComponent.self, for: entity))
+    }
+
+    func testMakePlayerCollisionBoxSizeMatchesScale() {
+        let scale: Float = 2.0
+        let entity = EntityFactory.makePlayer(in: world, at: .zero, scale: scale)
+        let box = world.getComponent(type: CollisionBoxComponent.self, for: entity)
+        XCTAssertNotNil(box)
+        XCTAssertEqual(box!.width, 48 * scale, accuracy: 0.001)
+        XCTAssertEqual(box!.height, 48 * scale, accuracy: 0.001)
+    }
+
     func testMakePlayerReturnsDistinctEntities() {
         let entity1 = EntityFactory.makePlayer(in: world, at: SIMD2<Float>(0, 0))
         let entity2 = EntityFactory.makePlayer(in: world, at: SIMD2<Float>(10, 10))
@@ -197,6 +213,23 @@ final class EntityFactoryTests: XCTestCase {
         let state = world.getComponent(type: EnemyStateComponent.self, for: enemy)
         XCTAssertNotNil(state)
         XCTAssertTrue(state!.mode == .wander)
+    }
+
+    // MARK: - makeEnemy: CollisionBoxComponent
+
+    func testMakeEnemyHasCollisionBox() {
+        let enemy = EntityFactory.makeEnemy(in: world, at: .zero, type: .charger)
+        XCTAssertNotNil(world.getComponent(type: CollisionBoxComponent.self, for: enemy))
+    }
+
+    func testMakeEnemyCollisionBoxSizeMatchesScale() {
+        let baseScale: Float = 2.0
+        let enemy = EntityFactory.makeEnemy(in: world, at: .zero, type: .charger, baseScale: baseScale)
+        let box = world.getComponent(type: CollisionBoxComponent.self, for: enemy)
+        let expectedSize = 48 * baseScale * EnemyType.charger.scale
+        XCTAssertNotNil(box)
+        XCTAssertEqual(box!.width, expectedSize, accuracy: 0.001)
+        XCTAssertEqual(box!.height, expectedSize, accuracy: 0.001)
     }
 
     // MARK: - makeEnemy: no player components
