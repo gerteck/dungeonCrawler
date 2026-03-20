@@ -64,7 +64,7 @@ class WeaponSystem: System {
         world.addComponent(component: VelocityComponent(linear: direction * speed), to: projectile)
         world.addComponent(component: SpriteComponent(textureName: "bullet", zLayer: 3), to: projectile)
         world.addComponent(component: ProjectileComponent(
-            velocity: direction * speed, damage: 10, owner: owner, effectiveRange: 400
+            damage: 10, owner: owner, effectiveRange: 400
         ), to: projectile)
     }
 }

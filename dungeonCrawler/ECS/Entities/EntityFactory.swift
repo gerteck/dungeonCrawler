@@ -103,7 +103,7 @@ public enum EntityFactory {
             type: .handgun,
             manaCost: 10,
             attackSpeed: 1,
-            coolDownInterval: TimeInterval(1),
+            coolDownInterval: TimeInterval(0.2),
             lastFiredAt: time
         ), to: entity)
         return entity

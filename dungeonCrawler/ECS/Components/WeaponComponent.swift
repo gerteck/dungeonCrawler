@@ -9,8 +9,10 @@ struct WeaponComponent: Component {
     // var coolDown: TimeInterval
     var lastFiredAt: Float = 0
 
-    init(type: WeaponType, manaCost: Float, 
-         attackSpeed: Float, coolDownInterval: TimeInterval,
+    init(type: WeaponType,
+         manaCost: Float,
+         attackSpeed: Float,
+         coolDownInterval: TimeInterval,
          lastFiredAt: Float) {
         self.type = type
         self.manaCost = manaCost
