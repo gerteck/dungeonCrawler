@@ -82,10 +82,12 @@ class GameScene: SKScene {
         cameraAdapter    = SpriteKitCameraAdapter(worldLayer: worldLayer)
 
         systemManager.register(InputSystem(inputProvider: touchInput))
+        systemManager.register(EnemyAISystem())
         systemManager.register(HealthSystem())
         systemManager.register(MovementSystem())
         systemManager.register(CollisionSystem())
         systemManager.register(WeaponSystem())
+        systemManager.register(KnockbackSystem())
         systemManager.register(CameraSystem())
         systemManager.register(RenderSystem(backend: renderingBackend))
     }
@@ -98,6 +100,7 @@ class GameScene: SKScene {
         let enemyScale = shortSide * 0.1 / 48.0   // follow knight scale for now
         let weaponScale = shortSide * 0.1 / 48.0
         let playerEntity = EntityFactory.makePlayer(in: world, at: .zero, scale: knightScale)
+        EntityFactory.makeEnemy(in: world, at: SIMD2(200, 200), type: .tower, baseScale: enemyScale)
         EntityFactory.makeEnemy(in: world, at: SIMD2(100, 100), type: .charger, scale: enemyScale * EnemyType.charger.scale)
         EntityFactory.makeWeapon(in: world, ownedBy: playerEntity, textureName: "handgun", offset: SIMD2(10, -5), scale: weaponScale)
         // Camera entity — ViewportComponent holds live camera state.
