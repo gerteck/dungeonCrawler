@@ -10,9 +10,18 @@ import simd
 
 public final class CollisionSystem: System {
     public let priority: Int = 30
+    
+    public let events: CollisionEventBuffer
+    public let destructionQueue: DestructionQueue
+    
+    public init(events: CollisionEventBuffer, destructionQueue: DestructionQueue) {
+        self.events = events
+        self.destructionQueue = destructionQueue
+    }
 
     public func update(deltaTime: Double, world: World) {
-        let dt = Float(deltaTime)
+        events.clear()
+        
         // Need entities with BOTH Transform and CollisionBox components
         let collidables = world.entities(
             with: TransformComponent.self,
@@ -22,15 +31,61 @@ public final class CollisionSystem: System {
             let (entityA, transformA, boxA) = collidables[i]
             for j in (i + 1)..<collidables.count {
                 let (entityB, transformB, boxB) = collidables[j]
-                if let mtv = minimumTranslationVector(
+                guard let mtv = minimumTranslationVector(
                     transformA: transformA, boxA: boxA,
                     transformB: transformB, boxB: boxB
-                ) {
-                    resolveCollision(entityA: entityA, entityB: entityB, mtv: mtv,
-                                     transformA: transformA, transformB: transformB, world: world)
-                }
+                ) else { continue }
+                
+                // 2. Classify the pair and route to the correct handler.
+                handleCollision(
+                    entityA: entityA, transformA: transformA,
+                    entityB: entityB, transformB: transformB,
+                    mtv: mtv,
+                    world: world
+                )
             }
         }
+        destructionQueue.flush(world: world)
+    }
+    
+    private func handleCollision(
+        entityA: Entity, transformA: TransformComponent,
+        entityB: Entity, transformB: TransformComponent,
+        mtv: SIMD2<Float>,
+        world: World
+    ) {
+        let aIsProjectile = world.getComponent(type: ProjectileComponent.self, for: entityA) != nil
+        let bIsProjectile = world.getComponent(type: ProjectileComponent.self, for: entityB) != nil
+        let aIsSolid      = isSolid(entityA, world: world)
+        let bIsSolid      = isSolid(entityB, world: world)
+ 
+        // Projectile hits a solid surface — record event, skip physics resolution.
+        if aIsProjectile && bIsSolid {
+            events.recordProjectileHitSolid(projectile: entityA, solid: entityB)
+            return
+        }
+        if bIsProjectile && aIsSolid {
+            events.recordProjectileHitSolid(projectile: entityB, solid: entityA)
+            return
+        }
+ 
+        // Projectile↔projectile or projectile↔non-solid — ignore for now.
+        // Add a ProjectileHitProjectileEvent here if you ever need it.
+        if aIsProjectile || bIsProjectile { return }
+ 
+        // Standard physics resolution for everything else.
+        resolveCollision(
+            entityA: entityA, entityB: entityB, mtv: mtv,
+            transformA: transformA, transformB: transformB,
+            world: world
+        )
+    }
+ 
+    /// A solid entity is anything a projectile should stop on.
+    /// Add new solid tags here as the game grows (e.g. ShieldTag).
+    private func isSolid(_ entity: Entity, world: World) -> Bool {
+        world.getComponent(type: WallTag.self,     for: entity) != nil ||
+        world.getComponent(type: ObstacleTag.self, for: entity) != nil
     }
 
     /// Returns true if the two OBBs overlap.

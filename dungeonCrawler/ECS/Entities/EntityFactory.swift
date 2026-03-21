@@ -147,4 +147,26 @@ public enum EntityFactory {
         ), to: entity)
         return entity
     }
+    
+    @discardableResult
+    public static func makeProjectile(
+        from position: SIMD2<Float>,
+        aimAt direction: SIMD2<Float>,
+        speed: Float,
+        owner: Entity,
+        in world: World
+    ) -> Entity {
+        let entity = world.createEntity()
+        let goingRight = direction.x >= 0
+        let bulletRotation: Float = goingRight
+            ? atan2(direction.y, direction.x)
+            : -atan2(direction.y, -direction.x)
+        world.addComponent(component: TransformComponent(position: position, rotation: bulletRotation, scale: 1), to: entity)
+        world.addComponent(component: VelocityComponent(linear: direction * speed), to: entity)
+        world.addComponent(component: SpriteComponent(textureName: "normalHandgunBullet", zPosition: 5), to: entity)
+        world.addComponent(component: ProjectileComponent(damage: 10, owner: owner), to: entity)
+        world.addComponent(component: EffectiveRangeComponent(base: 400), to: entity)
+        world.addComponent(component: CollisionBoxComponent(size: SIMD2<Float>(6, 6)), to: entity)
+        return entity
+    }
 }

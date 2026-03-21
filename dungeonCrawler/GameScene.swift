@@ -29,6 +29,10 @@ class GameScene: SKScene {
     
     // MARK: - Map system
     private let mapSystem = MapSystem()
+    
+    // MARK: - Collision Events
+    let collisionEvents   = CollisionEventBuffer()
+    let destructionQueue  = DestructionQueue()
 
     // MARK: - Joystick HUD nodes (drawn directly in SpriteKit, above game world)
     private let leftBase    = SKShapeNode(circleOfRadius: 50)
@@ -89,12 +93,12 @@ class GameScene: SKScene {
         systemManager.register(EnemyAISystem())
         systemManager.register(HealthSystem())
         systemManager.register(MovementSystem())
-        systemManager.register(CollisionSystem())
+        systemManager.register(CollisionSystem(events: collisionEvents,  destructionQueue: destructionQueue))
         systemManager.register(WeaponSystem())
         systemManager.register(KnockbackSystem())
         systemManager.register(CameraSystem())
         systemManager.register(RenderSystem(backend: renderingBackend))
-        systemManager.register(ProjectileSystem())
+        systemManager.register(ProjectileSystem(events: collisionEvents,  destructionQueue: destructionQueue))
     }
 
     // MARK: - Entity spawning
