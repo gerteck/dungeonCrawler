@@ -79,7 +79,7 @@ for (entity, transform, sprite) in renderables {
 
 ## Weapons
 
-- `WeaponComponent` — defines damage, fire rate, ammo, and other weapon statistics.
+- `WeaponComponent` — the weapon type, mana cost, attack speed, cooldown interval, and tracks when it was last fired.
 - `OwnerComponent` — links the weapon to the entity (for example, the player) that currently owns or has equipped it.
 - `TransformComponent` — determines where the weapon is in the world (position and rotation) so it can spawn projectiles correctly.
 - `SpriteComponent` — provides rendering data so the weapon can be drawn by the rendering system.

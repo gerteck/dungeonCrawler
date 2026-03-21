@@ -32,7 +32,7 @@ final class ProjectileSystemTests: XCTestCase {
     static let defaultEffectiveRange: Float = 300
     
     /// default velocity is 300
-    /// defalut projectile effective range is 300
+    /// default projectile effective range is 300
     @discardableResult
     private func makeProjectile(from position: SIMD2<Float> = SIMD2(0, 0),
                                 aimAt direction: SIMD2<Float> = SIMD2(1, 0)) -> Entity {

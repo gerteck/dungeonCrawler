@@ -32,7 +32,7 @@ public final class RenderSystem: System {
 
         for (entity, transform, sprite) in renderables {
             currentEntities.insert(entity)
-            let facing   = world.getComponent(type: FacingComponent.self, for: entity)
+            let facing = world.getComponent(type: FacingComponent.self, for: entity)
             let velocity = world.getComponent(type: VelocityComponent.self, for: entity)
             backend.syncNode(for: entity, transform: transform, sprite: sprite, facing: facing, velocity: velocity)
         }

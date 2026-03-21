@@ -1,4 +1,5 @@
 import Foundation
+import simd
 
 struct OwnerComponent: Component {
     var ownerEntity: Entity
