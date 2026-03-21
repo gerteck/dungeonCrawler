@@ -57,7 +57,7 @@ final class WeaponSystemTests: XCTestCase {
         return (owner, weapon)
     }
 
-    private func spawnedProjectiles() -> [Entity] {
+    private func getSpawnedProjectiles() -> [Entity] {
         world.entities(with: ProjectileComponent.self)
     }
 
@@ -154,7 +154,7 @@ final class WeaponSystemTests: XCTestCase {
         // gameTime after update = 0.5, cooldown = 1.0 → not ready
         system.update(deltaTime: 0.5, world: world)
 
-        XCTAssertTrue(spawnedProjectiles().isEmpty)
+        XCTAssertTrue(getSpawnedProjectiles().isEmpty)
     }
 
     func testWeaponFiresWhenCooldownElapsed() {
@@ -168,7 +168,7 @@ final class WeaponSystemTests: XCTestCase {
         // gameTime = 1.0 >= cooldown 0.5 → fires
         system.update(deltaTime: 1.0, world: world)
 
-        XCTAssertEqual(spawnedProjectiles().count, 1)
+        XCTAssertEqual(getSpawnedProjectiles().count, 1)
     }
 
     func testWeaponUpdatesLastFiredAtAfterFiring() {
@@ -196,7 +196,7 @@ final class WeaponSystemTests: XCTestCase {
         system.update(deltaTime: 1.0, world: world) // fires, lastFiredAt = 1.0
         system.update(deltaTime: 0.5, world: world) // gameTime = 1.5, diff = 0.5 < 1.0 → blocked
 
-        XCTAssertEqual(spawnedProjectiles().count, 1)
+        XCTAssertEqual(getSpawnedProjectiles().count, 1)
     }
 
     func testWeaponFiresAgainAfterCooldownResets() {
@@ -210,7 +210,7 @@ final class WeaponSystemTests: XCTestCase {
         system.update(deltaTime: 1.0, world: world) // fires, lastFiredAt = 1.0
         system.update(deltaTime: 1.0, world: world) // gameTime = 2.0, diff = 1.0 >= 1.0 → fires again
 
-        XCTAssertEqual(spawnedProjectiles().count, 2)
+        XCTAssertEqual(getSpawnedProjectiles().count, 2)
     }
 
     func testWeaponDoesNotFireWhenNotShooting() {
@@ -223,7 +223,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        XCTAssertTrue(spawnedProjectiles().isEmpty)
+        XCTAssertTrue(getSpawnedProjectiles().isEmpty)
     }
 
     // Projectile
@@ -239,7 +239,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let projectiles = spawnedProjectiles()
+        let projectiles = getSpawnedProjectiles()
         XCTAssertEqual(projectiles.count, 1)
         let transform = world.getComponent(type: TransformComponent.self, for: projectiles[0])!
         XCTAssertEqual(transform.position.x, 50, accuracy: 0.01)
@@ -256,7 +256,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let velocity = world.getComponent(type: VelocityComponent.self, for: spawnedProjectiles()[0])!
+        let velocity = world.getComponent(type: VelocityComponent.self, for: getSpawnedProjectiles()[0])!
         XCTAssertGreaterThan(velocity.linear.x, 0)
         XCTAssertEqual(velocity.linear.y, 0, accuracy: 0.01)
     }
@@ -272,7 +272,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let velocity = world.getComponent(type: VelocityComponent.self, for: spawnedProjectiles()[0])!
+        let velocity = world.getComponent(type: VelocityComponent.self, for: getSpawnedProjectiles()[0])!
         XCTAssertLessThan(velocity.linear.x, 0)
     }
 
@@ -286,7 +286,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let sprite = world.getComponent(type: SpriteComponent.self, for: spawnedProjectiles()[0])
+        let sprite = world.getComponent(type: SpriteComponent.self, for: getSpawnedProjectiles()[0])
         XCTAssertNotNil(sprite)
     }
 
@@ -300,7 +300,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let projectileComp = world.getComponent(type: ProjectileComponent.self, for: spawnedProjectiles()[0])!
+        let projectileComp = world.getComponent(type: ProjectileComponent.self, for: getSpawnedProjectiles()[0])!
         XCTAssertEqual(projectileComp.owner, owner)
     }
 
@@ -314,7 +314,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let projectileComp = world.getComponent(type: ProjectileComponent.self, for: spawnedProjectiles()[0])!
+        let projectileComp = world.getComponent(type: ProjectileComponent.self, for: getSpawnedProjectiles()[0])!
         XCTAssertGreaterThan(projectileComp.effectiveRange, 0)
     }
 }
