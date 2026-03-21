@@ -315,7 +315,7 @@ final class WeaponSystemTests: XCTestCase {
 
         system.update(deltaTime: 1.0, world: world)
 
-        let projectileComp = world.getComponent(type: ProjectileComponent.self, for: getSpawnedProjectiles()[0])!
-        XCTAssertGreaterThan(projectileComp.effectiveRange, 0)
+        let rangeComp = world.getComponent(type: EffectiveRangeComponent.self, for: getSpawnedProjectiles()[0])!
+        XCTAssertGreaterThan(rangeComp.value.current, 0)
     }
 }

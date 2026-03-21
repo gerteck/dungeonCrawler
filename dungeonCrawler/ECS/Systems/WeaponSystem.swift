@@ -70,8 +70,7 @@ public final class WeaponSystem: System {
         world.addComponent(component: TransformComponent(position: position, rotation: bulletRotation, scale: 1), to: projectile)
         world.addComponent(component: VelocityComponent(linear: direction * speed), to: projectile)
         world.addComponent(component: SpriteComponent(textureName: "normalHandgunBullet", zLayer: 3), to: projectile)
-        world.addComponent(component: ProjectileComponent(
-            damage: 10, owner: owner, effectiveRange: 400
-        ), to: projectile)
+        world.addComponent(component: ProjectileComponent(damage: 10, owner: owner), to: projectile)
+        world.addComponent(component: EffectiveRangeComponent(base: 400), to: projectile)
     }
 }

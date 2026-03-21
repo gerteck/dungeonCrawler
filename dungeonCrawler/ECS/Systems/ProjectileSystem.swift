@@ -16,10 +16,10 @@ public final class ProjectileSystem: System {
             world.modifyComponent(type: TransformComponent.self, for: projectileEntity) { transform in
                 transform.position += velocityComponent.linear * dt
             }
-            world.modifyComponent(type: ProjectileComponent.self, for: projectileEntity) { pComponent in
-                pComponent.effectiveRange -= simd_length(velocityComponent.linear) * dt
+            world.modifyComponent(type: EffectiveRangeComponent.self, for: projectileEntity) { rangeComponent in
+                rangeComponent.value.current -= simd_length(velocityComponent.linear) * dt
             }
-            if let p = world.getComponent(type: ProjectileComponent.self, for: projectileEntity), p.effectiveRange <= 0 {
+            if let range = world.getComponent(type: EffectiveRangeComponent.self, for: projectileEntity), range.value.current <= 0 {
                 world.destroyEntity(entity: projectileEntity)
             }
         }

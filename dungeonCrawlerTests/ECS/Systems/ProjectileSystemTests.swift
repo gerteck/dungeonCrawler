@@ -42,16 +42,15 @@ final class ProjectileSystemTests: XCTestCase {
         world.addComponent(component: TransformComponent(position: position, scale: 1), to: projectile)
         world.addComponent(component: VelocityComponent(linear: direction * speed), to: projectile)
         world.addComponent(component: SpriteComponent(textureName: "normalHandgunBullet", zLayer: 3), to: projectile)
-        world.addComponent(component: ProjectileComponent(
-            damage: 10, owner: owner, effectiveRange: ProjectileSystemTests.defaultEffectiveRange
-        ), to: projectile)
+        world.addComponent(component: ProjectileComponent(damage: 10, owner: owner), to: projectile)
+        world.addComponent(component: EffectiveRangeComponent(base: ProjectileSystemTests.defaultEffectiveRange), to: projectile)
         return projectile
     }
     
     func testProjectileEffectiveRangeDecreaseByTime() {
         let projectile = makeProjectile()
         system.update(deltaTime: 0.1, world: world)
-        let effectiveRangeAfter = world.getComponent(type: ProjectileComponent.self, for: projectile)!.effectiveRange
+        let effectiveRangeAfter = world.getComponent(type: EffectiveRangeComponent.self, for: projectile)!.value.current
         XCTAssertEqual(effectiveRangeAfter, ProjectileSystemTests.defaultEffectiveRange - ProjectileSystemTests.defalutVelocity * 0.1, accuracy: 0.001)
     }
     
