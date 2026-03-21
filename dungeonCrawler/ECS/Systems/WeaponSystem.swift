@@ -26,13 +26,20 @@ public final class WeaponSystem: System {
                 ownerComponent.offset.y
             )
 
+            // Mirror the aim angle when facing left so it works correctly with xScale flip.
+            let aimDir = ownerInput.aimDirection
+            let weaponRotation: Float = simd_length(aimDir) > 0.001
+                ? (facingRight ? atan2(aimDir.y, aimDir.x) : -atan2(aimDir.y, -aimDir.x))
+                : 0
+
             world.modifyComponent(type: TransformComponent.self, for: weaponEntity) { transform in
                 transform.position = ownerTransform.position + mirroredOffset
+                transform.rotation = weaponRotation
             }
 
             // Copy owner velocity so syncNode's flipFactor logic flips the weapon sprite
-            world.modifyComponent(type: VelocityComponent.self, for: weaponEntity) { vel in
-                vel.linear.x = facingRight ? 1.0 : -1.0
+            world.modifyComponent(type: FacingComponent.self, for: weaponEntity) { facing in
+                facing.facing = facingRight ? .right : .left
             }
             
             if ownerInput.isShooting {
@@ -56,7 +63,11 @@ public final class WeaponSystem: System {
                                  owner: Entity,
                                  in world: World) {
         let projectile = world.createEntity()
-        world.addComponent(component: TransformComponent(position: position, scale: 1), to: projectile)
+        let goingRight = direction.x >= 0
+        let bulletRotation: Float = goingRight
+            ? atan2(direction.y, direction.x)
+            : -atan2(direction.y, -direction.x)
+        world.addComponent(component: TransformComponent(position: position, rotation: bulletRotation, scale: 1), to: projectile)
         world.addComponent(component: VelocityComponent(linear: direction * speed), to: projectile)
         world.addComponent(component: SpriteComponent(textureName: "normalHandgunBullet", zLayer: 3), to: projectile)
         world.addComponent(component: ProjectileComponent(

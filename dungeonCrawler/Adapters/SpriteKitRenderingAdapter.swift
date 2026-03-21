@@ -29,7 +29,7 @@ public final class SpriteKitRenderingAdapter: RenderingBackend {
         let node = node(for: entity, sprite: sprite, in: worldLayer)
 
         node.position = transform.cgPoint
-        node.zRotation = 0
+        node.zRotation = CGFloat(transform.rotation)
 
         // We need to keep velocity here as some entity don't have facing component (eg. enemy, projectile)
         var flipFactor: CGFloat = node.xScale < 0 ? -1.0 : 1.0
