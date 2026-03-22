@@ -37,15 +37,86 @@ class FacingComponentTests: XCTestCase {
         super.tearDown()
     }
     
-    private func initEntity() -> Entity {
+    private func initEntityFacingRight() -> Entity {
         let entity = world.createEntity()
         world.addComponent(component: InputComponent(), to: entity)
+        world.addComponent(component: FacingComponent(facing: .right), to: entity)
+        return entity
+    }
+    private func initEntityFacingLeft() -> Entity {
+        let entity = world.createEntity()
+        world.addComponent(component: InputComponent(), to: entity)
+        world.addComponent(component: FacingComponent(facing: .left), to: entity)
         return entity
     }
     
-//    func testMoveLeftAimLeft() {
-//        let player = initEntity()
-//        mockProvider.rawMoveVector = SIMD2<Float>(-1, 0)
-//        mockProvider.rawAimVector = SIMD2<Float>(-1, 0)
-//    }
+    func testMoveLeftAimLeft() {
+        let player = initEntityFacingRight()
+        mockProvider.rawMoveVector = SIMD2<Float>(-1, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(-1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .left)
+    }
+    
+    func testMoveLeftAimRight() {
+        let player = initEntityFacingRight()
+        mockProvider.rawMoveVector = SIMD2<Float>(-1, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .right)
+    }
+    
+    func testMoveLeftAimRightStartLeft() {
+        let player = initEntityFacingLeft()
+        mockProvider.rawMoveVector = SIMD2<Float>(-1, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .right)
+    }
+    
+    func testMoveRightAimLeft() {
+        let player = initEntityFacingRight()
+        mockProvider.rawMoveVector = SIMD2<Float>(1, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(-1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .left)
+    }
+    
+    func testMoveRighttAimRight() {
+        let player = initEntityFacingRight()
+        mockProvider.rawMoveVector = SIMD2<Float>(1, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .right)
+    }
+    
+    func testMoveNooptAimRight() {
+        let player = initEntityFacingRight()
+        mockProvider.rawMoveVector = SIMD2<Float>(0, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .right)
+    }
+    
+    func testMoveNooptAimLeft() {
+        let player = initEntityFacingRight()
+        mockProvider.rawMoveVector = SIMD2<Float>(0, 0)
+        mockProvider.rawAimVector = SIMD2<Float>(-1, 0)
+        mockProvider.isShootPressed = true
+        system.update(deltaTime: 0.1, world: world)
+        let facing = world.getComponent(type: FacingComponent.self, for: player)?.facing
+        XCTAssertEqual(facing, .left)
+    }
 }
