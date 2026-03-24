@@ -28,6 +28,12 @@
         { "col": 3, "row": 2 },
         { "col": 4, "row": 2 }
       ],
+      "faceRow2": [
+        { "col": 1, "row": 1 },
+        { "col": 2, "row": 1 },
+        { "col": 3, "row": 1 },
+        { "col": 4, "row": 1 }
+      ],
       "baseRow": [
         { "col": 1, "row": 3 },
         { "col": 2, "row": 3 },
