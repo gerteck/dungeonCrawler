@@ -65,7 +65,7 @@ final class CollisionSystemTests: XCTestCase {
         world.addComponent(component: TransformComponent(position: position, scale: 1), to: entity)
         world.addComponent(component: CollisionBoxComponent(size: size), to: entity)
         world.addComponent(component: VelocityComponent(), to: entity)
-        world.addComponent(component: EnemyTagComponent(textureName: EnemyType.tower.textureName, scale: EnemyType.mummy.scale), to: entity)
+        world.addComponent(component: EnemyTagComponent(textureName: EnemyType.mummy.textureName, scale: EnemyType.mummy.scale), to: entity)
         world.addComponent(component: MassComponent(mass: EnemyType.mummy.mass), to: entity)
         return entity
     }
@@ -270,7 +270,7 @@ final class CollisionSystemTests: XCTestCase {
     }
 
     // player (mass 10) vs same weight enemy (mummy, mass 10): displace equally
-    func test_playerVsSameWeightEnemy_playerDisplacedMore() {
+    func test_playerVsSameWeightEnemy_playerDisplacedEqually() {
         let box    = SIMD2<Float>(20, 20)
         let player = makePlayerEntity(at: SIMD2(0,  0), size: box)
         let enemy  = makeSameWeightEnemyEntity(at: SIMD2(15, 0), size: box)
@@ -282,7 +282,7 @@ final class CollisionSystemTests: XCTestCase {
         let playerDisp = abs(world.getComponent(type: TransformComponent.self, for: player)!.position.x - playerPosBefore.x)
         let enemyDisp  = abs(world.getComponent(type: TransformComponent.self, for: enemy)!.position.x  - enemyPosBefore.x)
 
-        XCTAssertEqual(playerDisp, enemyDisp,
+        XCTAssertEqual(playerDisp, enemyDisp, accuracy: 0.001,
                              "Player should be displaced equally from same weight enemy (mummy)")
     }
 
@@ -312,7 +312,8 @@ final class CollisionSystemTests: XCTestCase {
                        "Heavy enemy (tower) should receive knockback speed of baseForce / mass")
     }
 
-    // same weight enemy (mummy, mass 10) receives equal knockbackspeed as
+    // same weight enemy (mummy, mass 10) receives equal knockbackspeed as player
+    // which should be 150
     func test_sameWeightEnemyReceivesSameKnockbackSpeed() {
         let box = SIMD2<Float>(20, 20)
         makePlayerEntity(at: SIMD2(0, 0), size: box)
@@ -320,7 +321,7 @@ final class CollisionSystemTests: XCTestCase {
         collisionSystem.update(deltaTime: 0.016, world: world)
 
         let sameWeightKB = world.getComponent(type: KnockbackComponent.self, for: sameWeightEnemy)!
-        // mummy mass 20: knockbackSpeed = baseForce / 10 = 150
+        // mummy mass 10: knockbackSpeed = baseForce / 10 = 150
         XCTAssertEqual(simd_length(sameWeightKB.velocity), 1500 / Float(EnemyType.mummy.mass), accuracy: 0.001,
                        "Same Weight enemy (mummy) should receive knockback speed of baseForce / mass")
     }
