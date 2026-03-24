@@ -29,7 +29,7 @@ public final class MapSystem: System {
         size: CGSize
     ) -> Entity {
         // 1. Create room entity
-        let room = EntityFactory.makeRoom(in: world, bounds: bounds, doorways: doorways)
+        let room = RoomEntityFactory(bounds: bounds, doorways: doorways).make(in: world)
         
         // 2. Generate interior (walls, obstacles)
         roomGenerator.generateRoomInterior(room: room, world: world)
@@ -108,12 +108,7 @@ public final class MapSystem: System {
             
             // Spawn enemy at this position
             let enemyType = [EnemyType.charger, EnemyType.mummy, EnemyType.ranger].randomElement()!
-            EntityFactory.makeEnemy(
-                in: world,
-                at: spawnPoint.position,
-                type: enemyType,
-                baseScale: scale
-            )
+            EnemyEntityFactory(at: spawnPoint.position, type: enemyType, baseScale: scale).make(in: world)
         }
     }
     
@@ -134,10 +129,10 @@ public final class MapSystem: System {
                     transform.position = entryPoint.position
                 }
             } else {
-                EntityFactory.makePlayer(in: world, at: entryPoint.position, scale: scale)
+                PlayerEntityFactory(at: entryPoint.position, scale: scale).make(in: world)
             }
             let player = findPlayer(in: world)
-            EntityFactory.makeWeapon(in: world, ownedBy: player!, textureName: "handgun", offset: SIMD2(10, -5), scale: scale, lastFiredAt: 0)
+            WeaponEntityFactory(ownedBy: player!, textureName: "handgun", offset: SIMD2(10, -5), scale: scale, lastFiredAt: 0).make(in: world)
         }
     }
     

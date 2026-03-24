@@ -213,7 +213,7 @@ final class MapSystemTests: XCTestCase {
  
     func test_spawnPlayerInRoom_movesExistingPlayer() {
         // Pre-create a player at a known position
-        EntityFactory.makePlayer(in: world, at: SIMD2(999, 999), scale: 1)
+        PlayerEntityFactory(at: SIMD2(999, 999), scale: 1).make(in: world)
  
         let room = mapSystem.generateAndActivateRoom(
             bounds: standardBounds, world: world, size: screenSize
