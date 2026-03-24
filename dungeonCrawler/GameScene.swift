@@ -128,10 +128,10 @@ class GameScene: SKScene {
         let knightScale = shortSide * 0.1 / 48.0   // assumes 48pt base texture size
         let enemyScale = shortSide * 0.1 / 48.0   // follow knight scale for now
         let weaponScale = shortSide * 0.1 / 48.0
-        let playerEntity = EntityFactory.makePlayer(in: world, at: .zero, scale: knightScale)
-        EntityFactory.makeEnemy(in: world, at: SIMD2(200, 200), type: .tower, baseScale: enemyScale)
-        EntityFactory.makeEnemy(in: world, at: SIMD2(100, 100), type: .charger, baseScale: enemyScale * EnemyType.charger.scale)
-        EntityFactory.makeWeapon(in: world, ownedBy: playerEntity, textureName: "handgun", offset: SIMD2(10, -5), scale: weaponScale, lastFiredAt: 0)
+        let playerEntity = PlayerEntityFactory(at: .zero, scale: knightScale).make(in: world)
+        EnemyEntityFactory(at: SIMD2(200, 200), type: .tower, baseScale: enemyScale).make(in: world)
+        EnemyEntityFactory(at: SIMD2(100, 100), type: .charger, baseScale: enemyScale * EnemyType.charger.scale).make(in: world)
+        WeaponEntityFactory(ownedBy: playerEntity, textureName: "handgun", offset: SIMD2(10, -5), scale: weaponScale, lastFiredAt: 0).make(in: world)
         // Camera entity — ViewportComponent holds live camera state.
         // CameraFocusComponent stays on the player
 
