@@ -59,14 +59,22 @@ final class EntityFactoryTests: XCTestCase {
         let entity = EntityFactory.makePlayer(in: world, at: SIMD2<Float>(0, 0))
         let sprite = world.getComponent(type: SpriteComponent.self, for: entity)
         XCTAssertNotNil(sprite)
-        XCTAssertEqual(sprite!.textureName, "knight")
+        guard case .texture(let name) = sprite!.content else {
+            XCTFail("Expected .texture content")
+            return
+        }
+        XCTAssertEqual(name, "knight")
     }
 
     func testMakePlayerCustomTexture() {
         let entity = EntityFactory.makePlayer(in: world, at: SIMD2<Float>(0, 0), textureName: "warrior")
         let sprite = world.getComponent(type: SpriteComponent.self, for: entity)
         XCTAssertNotNil(sprite)
-        XCTAssertEqual(sprite!.textureName, "warrior")
+        guard case .texture(let name) = sprite!.content else {
+            XCTFail("Expected .texture content")
+            return
+        }
+        XCTAssertEqual(name, "warrior")
     }
 
     func testMakePlayerTag() {
@@ -102,8 +110,8 @@ final class EntityFactoryTests: XCTestCase {
         let entity = EntityFactory.makePlayer(in: world, at: .zero, scale: scale)
         let box = world.getComponent(type: CollisionBoxComponent.self, for: entity)
         XCTAssertNotNil(box)
-        XCTAssertEqual(box!.width, 48 * scale, accuracy: 0.001)
-        XCTAssertEqual(box!.height, 48 * scale, accuracy: 0.001)
+        XCTAssertEqual(box!.width, WorldConstants.playerSize * scale, accuracy: 0.001)
+        XCTAssertEqual(box!.height, WorldConstants.playerSize * scale, accuracy: 0.001)
     }
 
     func testMakePlayerReturnsDistinctEntities() {
@@ -170,7 +178,11 @@ final class EntityFactoryTests: XCTestCase {
             let enemy = EntityFactory.makeEnemy(in: world, at: .zero, type: enemyType)
             let sprite = world.getComponent(type: SpriteComponent.self, for: enemy)
             XCTAssertNotNil(sprite, "Missing sprite for \(enemyType)")
-            XCTAssertEqual(sprite!.textureName, enemyType.textureName, "Texture mismatch for \(enemyType)")
+            guard case .texture(let name) = sprite!.content else {
+                XCTFail("Expected .texture content for \(enemyType)")
+                continue
+            }
+            XCTAssertEqual(name, enemyType.textureName, "Texture mismatch for \(enemyType)")
         }
     }
 
@@ -226,7 +238,7 @@ final class EntityFactoryTests: XCTestCase {
         let baseScale: Float = 2.0
         let enemy = EntityFactory.makeEnemy(in: world, at: .zero, type: .charger, baseScale: baseScale)
         let box = world.getComponent(type: CollisionBoxComponent.self, for: enemy)
-        let expectedSize = 48 * baseScale * EnemyType.charger.scale
+        let expectedSize = WorldConstants.playerSize * baseScale * EnemyType.charger.scale
         XCTAssertNotNil(box)
         XCTAssertEqual(box!.width, expectedSize, accuracy: 0.001)
         XCTAssertEqual(box!.height, expectedSize, accuracy: 0.001)

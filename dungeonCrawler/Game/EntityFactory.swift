@@ -38,13 +38,15 @@ public enum EntityFactory {
         world.addComponent(component: TransformComponent(position: position, rotation: 0, scale: scale), to: entity)
         world.addComponent(component: VelocityComponent(), to: entity)
         world.addComponent(component: InputComponent(), to: entity)
-        world.addComponent(component: SpriteComponent(textureName: textureName), to: entity)
-        world.addComponent(component: CollisionBoxComponent(size: SIMD2<Float>(28, 28)), to: entity)
+        world.addComponent(component: SpriteComponent(
+            content: .texture(name: textureName),
+            layer: .entity
+        ), to: entity)
         world.addComponent(component: PlayerTagComponent(), to: entity)
         world.addComponent(component: CameraFocusComponent(), to: entity)
         world.addComponent(component: HealthComponent(base: 100), to: entity)
         world.addComponent(component: MoveSpeedComponent(base: 90), to: entity)
-        world.addComponent(component: CollisionBoxComponent(size: SIMD2(48 * scale, 48 * scale)), to: entity)
+        world.addComponent(component: CollisionBoxComponent(size: SIMD2(WorldConstants.playerSize * scale, WorldConstants.playerSize * scale)), to: entity)
         world.addComponent(component: FacingComponent(), to: entity)
 
         return entity
@@ -75,11 +77,14 @@ public enum EntityFactory {
         let finalScale = baseScale * type.scale
 
         world.addComponent(component: TransformComponent(position: position, rotation: 0, scale: finalScale), to: entity)
-        world.addComponent(component: SpriteComponent(textureName: type.textureName), to: entity)
+        world.addComponent(component: SpriteComponent(
+            content: .texture(name: type.textureName),
+            layer: .entity
+        ), to: entity)
         world.addComponent(component: EnemyTagComponent(enemyType: type), to: entity)
         world.addComponent(component: VelocityComponent(), to: entity)
         world.addComponent(component: EnemyStateComponent(), to: entity)
-        world.addComponent(component: CollisionBoxComponent(size: SIMD2(48 * finalScale, 48 * finalScale)), to: entity)
+        world.addComponent(component: CollisionBoxComponent(size: SIMD2(WorldConstants.playerSize * finalScale, WorldConstants.playerSize * finalScale)), to: entity)
 
         return entity
     }
@@ -89,7 +94,7 @@ public enum EntityFactory {
     // Creates a room entity with all necessary components
     //
     // Components attached:
-    //   • RoomComponent       — bounds, doorways, spawn points
+    //   • RoomMetadataComponent — bounds, doorways, spawn points
     //   • TransformComponent  — position at room center (for spatial queries)
     //
     // Future additions:
@@ -102,22 +107,18 @@ public enum EntityFactory {
         bounds: RoomBounds,
         doorways: [Doorway] = [],
         spawnPoints: [SpawnPoint] = [],
-        useGrid: Bool = false
+        roomID: UUID = UUID()
     ) -> Entity {
         let entity = world.createEntity()
-        var roomComponent = RoomComponent(bounds: bounds, doorways: doorways, spawnPoints: spawnPoints)
-        
-        // Optionally add grid layout for tile-based generation
-        if useGrid {
-            let gridSize = SIMD2<Int>(
-                Int(bounds.size.x / 32), // 32 units per tile
-                Int(bounds.size.y / 32)
-            )
-            roomComponent.gridLayout = GridLayout(gridSize: gridSize, cellSize: 32)
-        }
-        
-        world.addComponent(component: roomComponent, to: entity)
+        let metadata = RoomMetadataComponent(
+            roomID: roomID,
+            bounds: bounds,
+            doorways: doorways,
+            spawnPoints: spawnPoints
+        )
+        world.addComponent(component: metadata, to: entity)
         world.addComponent(component: TransformComponent(position: bounds.center), to: entity)
+        world.addComponent(component: RoomMemberComponent(roomID: roomID), to: entity)
         return entity
     }
 
@@ -136,7 +137,10 @@ public enum EntityFactory {
         world.addComponent(component: TransformComponent(position: startPos + offset, rotation: 0, scale: scale), to: entity)
         let facingOfOwner = world.getComponent(type: FacingComponent.self, for: player)?.facing ?? .right
         world.addComponent(component: FacingComponent(facing: facingOfOwner), to: entity)
-        world.addComponent(component: SpriteComponent(textureName: textureName, zPosition: 4), to: entity)
+        world.addComponent(component: SpriteComponent(
+            content: .texture(name: textureName),
+            layer: .weapon
+        ), to: entity)
         world.addComponent(component: OwnerComponent(ownerEntity: player, offset: offset), to: entity)
         world.addComponent(component: WeaponComponent(
             type: .handgun,
@@ -164,7 +168,10 @@ public enum EntityFactory {
             : -atan2(direction.y, -direction.x)
         world.addComponent(component: TransformComponent(position: position, rotation: bulletRotation, scale: 1), to: entity)
         world.addComponent(component: VelocityComponent(linear: direction * speed), to: entity)
-        world.addComponent(component: SpriteComponent(textureName: "normalHandgunBullet", zPosition: 5), to: entity)
+        world.addComponent(component: SpriteComponent(
+            content: .texture(name: "normalHandgunBullet"),
+            layer: .projectile
+        ), to: entity)
         world.addComponent(component: ProjectileComponent(damage: 10, owner: owner), to: entity)
         world.addComponent(component: EffectiveRangeComponent(base: effectiveRange), to: entity)
         world.addComponent(component: CollisionBoxComponent(size: SIMD2<Float>(6, 6)), to: entity)
