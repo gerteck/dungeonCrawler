@@ -27,7 +27,7 @@ public final class TileRegistryLoader {
             ?? Bundle.main.url(forResource: theme.rawValue, withExtension: "json", subdirectory: "Tilesets")
             ?? Bundle.main.url(forResource: theme.rawValue, withExtension: "json", subdirectory: "Resources/Tilesets")
         guard let url else {
-            print("[TileRegistryLoader] ⚠️ Missing bundle resource: \(theme.rawValue).json")
+            print("[TileRegistryLoader]: Missing bundle resource: \(theme.rawValue).json")
             return nil
         }
         do {
@@ -35,7 +35,7 @@ public final class TileRegistryLoader {
             let raw  = try JSONDecoder().decode(RawRegistry.self, from: data)
             return raw.toEntry()
         } catch {
-            print("[TileRegistryLoader] ⚠️ Failed to decode \(theme.rawValue).json: \(error)")
+            print("[TileRegistryLoader]: Failed to decode \(theme.rawValue).json: \(error)")
             return nil
         }
     }
