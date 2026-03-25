@@ -9,7 +9,7 @@ import Foundation
 /// (`SpriteKitTileMapAdapter`) receives its scene layer at `init` time.
 ///
 /// **Lifecycle:**
-/// `DungeonManager` calls `renderRoom` / `renderCorridor` during `loadLevel`,
+/// `LevelOrchestrator` calls `renderRoom` / `renderCorridor` during `loadLevel`,
 /// and `tearDownAll` during level reset.
 public protocol TileMapRenderer: AnyObject {
 
